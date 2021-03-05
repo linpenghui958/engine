@@ -181,13 +181,14 @@ public class FlutterJNI {
    * <p>This method must not be invoked if {@code FlutterJNI} is already attached to native.
    */
   @UiThread
-  public void attachToNative(boolean isBackgroundView) {
+  public void attachToNative(String dynamicPath, boolean isBackgroundView) {
     ensureRunningOnMainThread();
     ensureNotAttachedToNative();
-    nativePlatformViewId = nativeAttach(this, isBackgroundView);
+    // 因为当前类中无法获得Contenxt，所以需要FlutterNativeView和FlutterEngine调用attachToNative方法时传入路径
+    nativePlatformViewId = nativeAttach(this, dynamicPath, isBackgroundView);
   }
 
-  private native long nativeAttach(@NonNull FlutterJNI flutterJNI, boolean isBackgroundView);
+  private native long nativeAttach(@NonNull FlutterJNI flutterJNI, String dynamicPath, boolean isBackgroundView);
 
   /**
    * Detaches this {@code FlutterJNI} instance from Flutter's native engine, which precludes any

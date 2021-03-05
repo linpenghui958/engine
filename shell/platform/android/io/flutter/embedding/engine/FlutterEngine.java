@@ -27,6 +27,7 @@ import io.flutter.embedding.engine.systemchannels.SettingsChannel;
 import io.flutter.embedding.engine.systemchannels.SystemChannel;
 import io.flutter.embedding.engine.systemchannels.TextInputChannel;
 import io.flutter.plugin.platform.PlatformViewsController;
+import io.flutter.util.PathUtils;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -205,7 +206,7 @@ public class FlutterEngine {
     flutterLoader.ensureInitializationComplete(context, dartVmArgs);
 
     flutterJNI.addEngineLifecycleListener(engineLifecycleListener);
-    attachToJni();
+    attachToJni(context);
 
     this.dartExecutor = new DartExecutor(flutterJNI, context.getAssets());
     this.dartExecutor.onAttachedToJNI();
@@ -234,10 +235,10 @@ public class FlutterEngine {
     }
   }
 
-  private void attachToJni() {
+  private void attachToJni(Context context) {
     Log.v(TAG, "Attaching to JNI.");
     // TODO(mattcarroll): update native call to not take in "isBackgroundView"
-    flutterJNI.attachToNative(false);
+    flutterJNI.attachToNative(PathUtils.getDynamicPath(context), false);
 
     if (!isAttachedToJni()) {
       throw new RuntimeException("FlutterEngine failed to attach to its native Object reference.");

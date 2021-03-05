@@ -148,15 +148,28 @@ void SurfaceTextureDetachFromGLContext(JNIEnv* env, jobject obj) {
 static jlong AttachJNI(JNIEnv* env,
                        jclass clazz,
                        jobject flutterJNI,
+                       jstring dynamicPath,
                        jboolean is_background_view) {
   fml::jni::JavaObjectWeakGlobalRef java_object(env, flutterJNI);
-  auto shell_holder = std::make_unique<AndroidShellHolder>(
-      FlutterMain::Get().GetSettings(), java_object, is_background_view);
-  if (shell_holder->IsValid()) {
-    return reinterpret_cast<jlong>(shell_holder.release());
-  } else {
-    return 0;
-  }
+  const auto dynamic_path = fml::jni::JavaStringToString(env, dynamicPath);
+  Settings settings = FlutterMain::Get().GetSettings();
+    if(dynamic_path.size() > 0) {
+        settings.application_library_path.clear();
+        // 在AndroidShellHolder初始化前设置新路径
+        settings.application_library_path.emplace_back(dynamic_path + "/libapp.so");
+        settings.assets_path = dynamic_path + "/flutter_assets";
+    }
+
+    FML_LOG(INFO) << "settings.assets_path:" << settings.assets_path;
+
+    // 将修改后的settings传递进去
+    auto shell_holder = std::make_unique<AndroidShellHolder>(
+        settings, java_object, is_background_view);
+    if (shell_holder->IsValid()) {
+      return reinterpret_cast<jlong>(shell_holder.release());
+    } else {
+      return 0;
+    }
 }
 
 static void DestroyJNI(JNIEnv* env, jobject jcaller, jlong shell_holder) {
@@ -489,7 +502,7 @@ bool RegisterApi(JNIEnv* env) {
       // Start of methods from FlutterJNI
       {
           .name = "nativeAttach",
-          .signature = "(Lio/flutter/embedding/engine/FlutterJNI;Z)J",
+          .signature = "(Lio/flutter/embedding/engine/FlutterJNI;Ljava/lang/String;Z)J",
           .fnPtr = reinterpret_cast<void*>(&AttachJNI),
       },
       {
