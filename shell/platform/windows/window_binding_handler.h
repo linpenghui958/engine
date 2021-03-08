@@ -10,7 +10,7 @@
 #include <string>
 #include <variant>
 
-#include "flutter/shell/platform/common/cpp/geometry.h"
+#include "flutter/shell/platform/common/geometry.h"
 #include "flutter/shell/platform/windows/public/flutter_windows.h"
 #include "flutter/shell/platform/windows/window_binding_handler_delegate.h"
 
@@ -63,8 +63,8 @@ class WindowBindingHandler {
   // content. See mouse_cursor.dart for the values and meanings of cursor_name.
   virtual void UpdateFlutterCursor(const std::string& cursor_name) = 0;
 
-  // Sets the cursor rect in root view coordinates.
-  virtual void UpdateCursorRect(const Rect& rect) = 0;
+  // Invoked when the cursor/composing rect has been updated in the framework.
+  virtual void OnCursorRectUpdated(const Rect& rect) = 0;
 };
 
 }  // namespace flutter

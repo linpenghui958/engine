@@ -63,7 +63,7 @@ Engine::Engine(Delegate& delegate,
                DartVM& vm,
                fml::RefPtr<const DartSnapshot> isolate_snapshot,
                TaskRunners task_runners,
-               const PlatformData platform_data,
+               const PlatformData& platform_data,
                Settings settings,
                std::unique_ptr<Animator> animator,
                fml::WeakPtr<IOManager> io_manager,
@@ -515,8 +515,9 @@ void Engine::DoDispatchPacket(std::unique_ptr<PointerDataPacket> packet,
   }
 }
 
-void Engine::ScheduleSecondaryVsyncCallback(const fml::closure& callback) {
-  animator_->ScheduleSecondaryVsyncCallback(callback);
+void Engine::ScheduleSecondaryVsyncCallback(uintptr_t id,
+                                            const fml::closure& callback) {
+  animator_->ScheduleSecondaryVsyncCallback(id, callback);
 }
 
 void Engine::HandleAssetPlatformMessage(fml::RefPtr<PlatformMessage> message) {

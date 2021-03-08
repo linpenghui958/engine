@@ -8,10 +8,10 @@
 #include <iostream>
 #include <sstream>
 
-#include "flutter/shell/platform/common/cpp/client_wrapper/binary_messenger_impl.h"
-#include "flutter/shell/platform/common/cpp/client_wrapper/include/flutter/basic_message_channel.h"
-#include "flutter/shell/platform/common/cpp/json_message_codec.h"
-#include "flutter/shell/platform/common/cpp/path_utils.h"
+#include "flutter/shell/platform/common/client_wrapper/binary_messenger_impl.h"
+#include "flutter/shell/platform/common/client_wrapper/include/flutter/basic_message_channel.h"
+#include "flutter/shell/platform/common/json_message_codec.h"
+#include "flutter/shell/platform/common/path_utils.h"
 #include "flutter/shell/platform/windows/flutter_windows_view.h"
 #include "flutter/shell/platform/windows/string_conversion.h"
 #include "flutter/shell/platform/windows/system_utils.h"
@@ -145,7 +145,7 @@ FlutterWindowsEngine::FlutterWindowsEngine(const FlutterProjectBundle& project)
   texture_registrar_ = std::make_unique<FlutterWindowsTextureRegistrar>(this);
 #ifndef WINUWP
   window_proc_delegate_manager_ =
-      std::make_unique<Win32WindowProcDelegateManager>();
+      std::make_unique<WindowProcDelegateManagerWin32>();
 #endif
 
   // Set up internal channels.
@@ -287,6 +287,14 @@ void FlutterWindowsEngine::SendWindowMetricsEvent(
 void FlutterWindowsEngine::SendPointerEvent(const FlutterPointerEvent& event) {
   if (engine_) {
     embedder_api_.SendPointerEvent(engine_, &event, 1);
+  }
+}
+
+void FlutterWindowsEngine::SendKeyEvent(const FlutterKeyEvent& event,
+                                        FlutterKeyEventCallback callback,
+                                        void* user_data) {
+  if (engine_) {
+    embedder_api_.SendKeyEvent(engine_, &event, callback, user_data);
   }
 }
 

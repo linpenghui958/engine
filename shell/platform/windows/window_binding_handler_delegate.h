@@ -5,7 +5,7 @@
 #ifndef FLUTTER_SHELL_PLATFORM_WINDOWS_WINDOW_BINDING_HANDLER_DELEGATE_H_
 #define FLUTTER_SHELL_PLATFORM_WINDOWS_WINDOW_BINDING_HANDLER_DELEGATE_H_
 
-#include "flutter/shell/platform/common/cpp/geometry.h"
+#include "flutter/shell/platform/common/geometry.h"
 #include "flutter/shell/platform/embedder/embedder.h"
 
 namespace flutter {
@@ -50,13 +50,21 @@ class WindowBindingHandlerDelegate {
                      int scancode,
                      int action,
                      char32_t character,
-                     bool extended) = 0;
+                     bool extended,
+                     bool was_down) = 0;
 
   // Notifies the delegate that IME composing mode has begun.
   //
   // Triggered when the user begins editing composing text using a multi-step
   // input method such as in CJK text input.
   virtual void OnComposeBegin() = 0;
+
+  // Notifies the delegate that IME composing region have been committed.
+  //
+  // Triggered when the user commits the current composing text while using a
+  // multi-step input method such as in CJK text input. Composing continues with
+  // the next keypress.
+  virtual void OnComposeCommit() = 0;
 
   // Notifies the delegate that IME composing mode has ended.
   //
